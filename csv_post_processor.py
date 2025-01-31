@@ -58,7 +58,7 @@ def process_text_with_gpt(prompt, index):
 
     중요: 각 게시글은 반드시 개별적으로 처리되어야 하며, 키워드도 각 게시글별로 별도로 추출되어야 합니다.
 
-    # Examples  
+    # Examples
 
     **Example Input:**  
     1. Title: 일 잘하는 법: 시간 관리를 중심으로, Contents: 시간 관리는 제일 중요한 자기관리 스킬입니다. 저는 시간을 분 단위로 쪼개서 사용하는 방법으로 많은 일을 처리했습니다. 우선순위를 정하여 실천하는 것이 큰 도움을 줍니다. 이렇게 하면 효율적으로 하루를 보낼 수 있습니다.
@@ -67,12 +67,14 @@ def process_text_with_gpt(prompt, index):
     **Example Output:**  
     ```markdown
     1. 시간 관리는 자기개발에서 핵심적인 역량입니다. 시간을 세밀하게 관리하고, 이를 통해 생산성을 극대화할 수 있습니다. 특히, 우선순위를 설정하고 이를 실천하는 방식은 하루를 효율적으로 활용하는 데 매우 유용합니다.  
+    키워드:
     - 시간 관리
     - 자기관리
     - 우선순위
     - 생산성
 
     2. 총무나 경리 분야로 취업을 희망합니다. 현재 보유한 자격증은 간호조무사와 전산회계 2급입니다. 추가로 어떤 자격증을 취득하는 것이 좋을까요?  
+    키워드:
     - 총무  
     - 경리  
     - 취업  
@@ -163,7 +165,8 @@ def process_csv(input_file, output_file):
                         
                         df.at[df_idx, 'processed_content'] = content_part
                         df.at[df_idx, 'keywords'] = keywords_part
-                
+                        
+                df = df[['processed_content', 'keywords', 'Date']]
                 # 각 배치 처리 후 바로 파일에 저장
                 df.to_csv(output_file, index=False, encoding='utf-8-sig')
                 print(f"Processing complete. Results saved to {output_file}")
