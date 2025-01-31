@@ -18,6 +18,11 @@ client = AzureOpenAI(
     api_version="2024-05-01-preview",
 )
 
+# 폴더 생성
+os.makedirs("crawling_result", exist_ok=True)
+os.makedirs("refine_result", exist_ok=True)
+
+
 def process_text_with_gpt(prompt, index):
     system_prompt = """
     게시글의 타이틀과 내용을 기반으로 핵심 정보를 파악하고, 이를 분석하기 쉽도록 정제된 말투로 재작성합니다. 또한 게시글의 주요 키워드도 함께 추출하여 제공합니다.  
@@ -179,7 +184,7 @@ def process_csv(input_file, output_file):
     
 
 # 사용 예시
-input_file = 'crawling_results.csv'  # 입력 CSV 파일 경로
-output_file = 'output.csv'  # 출력 CSV 파일 경로
+input_file = 'crawling_result/crawling_results.csv'   # 입력 CSV 파일 경로
+output_file = 'refine_result/output.csv'  # 출력 CSV 파일 경로
 
 process_csv(input_file, output_file)
