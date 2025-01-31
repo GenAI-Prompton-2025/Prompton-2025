@@ -3,9 +3,10 @@ from bs4 import BeautifulSoup
 import pandas as pd
 from datetime import datetime
 import os
+import json
 
 TARGET_URL = 'https://www.albamon.com/alba-talk/experience'
-SART_TALK_NO = 978055
+SART_TALK_NO = 978459
  
  # 헤더와 요청
 headers = {'User-Agent' : 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
@@ -60,53 +61,38 @@ for talkNo in range(SART_TALK_NO, SART_TALK_NO-100, -1):
     if not title_element or not title_element.get_text(strip=True) or not content or not content_date:
         continue
 
-     # 게시글 데이터를 리스트에 추가
-    post_data.append({
-        "talkNo": talkNo,
-        "title": title,
-        "content": content,
-        "content_date": content_date
-    })
+    
 
     # 댓글 리스트 파싱
     comment_list = soup.select('.CommentList_comment-contents__YVrtF > ul li')
     parsed_comments = parse_comment_items(comment_list)
 
-    for comment in parsed_comments:
-        comment_data.append({
-            "talkNo": talkNo,  # 게시글과 댓글을 연결하기 위한 ID
-            "comment_date": comment["comment_date"],
-            "comment_text": comment["comment_text"]
-        })
+    # 게시글 데이터를 리스트에 추가
+    post_data.append({
+        "talkNo": talkNo,
+        "title": title,
+        "content": content,
+        "content_date": content_date,
+        "comments": json.dumps(parsed_comments, ensure_ascii=False)
+    })
 
     
     print(f"✅ Saved talkNo {talkNo}")
 
 
-# DataFrame 생성
 # 데이터프레임 생성
 df_posts = pd.DataFrame(post_data)
-df_comments = pd.DataFrame(comment_data)
+# df_comments = pd.DataFrame(comment_data)
 
 # **게시글 데이터와 댓글 데이터를 talkNo를 기준으로 병합**
-merged_data = pd.merge(df_posts, df_comments, on="talkNo", how="inner")
+# merged_data = pd.merge(df_posts, df_comments, on="talkNo", how="inner")
 
-
-# 결과 출력 (확인용)
-for index, data in merged_data.iterrows():
-    print(f"게시글 번호: {data['talkNo']}")
-    print(f"제목: {data['title']}")
-    print(f"본문: {data['content']}")
-    print(f"작성일: {data['content_date']}")
-    print(f"댓글 작성일: {data['comment_date']}")
-    print(f"댓글 내용: {data['comment_text']}")
-    print("=" * 50)
 
 # 저장할 디렉토리 생성
 output_dir = "crawling_result"
 os.makedirs(output_dir, exist_ok=True)
 
 # CSV 파일로 저장
-csv_file =  os.path.join(output_dir, "crawling_detail_results.csv")
-merged_data.to_csv(csv_file, index=False, encoding='utf-8-sig')  # UTF-8 인코딩으로 저장
+csv_file =  os.path.join(output_dir, "crawling_detail_results_array.csv")
+df_posts.to_csv(csv_file, index=False, encoding='utf-8-sig')  # UTF-8 인코딩으로 저장
 print(f"Data saved to {csv_file}")

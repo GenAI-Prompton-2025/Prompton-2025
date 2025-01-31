@@ -1,2 +1,3 @@
 # Python 가상 환경 폴더 (.venv) 무시
 .venv/
+.DS_Store
